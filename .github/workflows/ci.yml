@@ -58,3 +58,16 @@ jobs:
       # hence we print the name of the target branch
       - name: lint diff with ${{ github.event.pull_request.base.ref }}
         run: sh scripts/github-build.sh ${{ matrix.prefix }}${{ github.event.pull_request.base.ref }} ${{ matrix.prefix }}${{ github.event.pull_request.head.ref }}
+      - name: postgres setup
+        uses: harmon758/postgresql-action@v1
+        with:
+          postgresql version: "12.3"
+          postgresql db: "test"
+          postgresql user: "postgres"
+          postgresql password: "pa$sW0rd"
+      - name: verify postgres
+        run: psql --version
+      - name: creating env for CI postgres access
+        run: \cp .env.ci.sample .env
+      - name: test api endpoints
+        run: yarn test
